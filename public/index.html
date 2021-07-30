@@ -1,0 +1,31 @@
+<html lang="en">
+  <head>
+    <title>Backend Test Task</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <script src="https://cdn.jsdelivr.net/npm/js-base64@3.6.1/base64.min.js"></script>
+    <script src="/js/app.js"></script>
+  </head>
+  <body>
+    <div style="font-size: small;"><a href="/api/docs">API docs</a></div>
+    <h2>Upload file</h2>
+    <div style="display: flex;">
+      <input type="file" id="file-input" style="display: flex; flex-grow: 1"/>
+      <button onclick="sendImageData()" style="display: flex; flex-grow: 0">Send</button>
+    </div>
+    <div id="error" style="font-size: small; color: #a44;" hidden="true">
+    </div>
+    </hr>
+    <h2>Last images</h2>
+    <div>
+      <button onclick="loadLastImages()">Refresh</button>
+    </div>
+    <table>
+      <thead>
+        <th>Upload date</th><th>Original</th><th>Negative</th>
+      </thead>
+      <tbody id="last-image-list">
+      </tbody>
+    </table>
+  </body>
+</html>

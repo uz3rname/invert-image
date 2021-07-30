@@ -1,0 +1,115 @@
+definitions:
+  api.EncodedImage:
+    properties:
+      base64:
+        type: string
+      mimeType:
+        type: string
+    type: object
+  api.ErrorDTO:
+    properties:
+      message:
+        type: string
+      status:
+        enum:
+        - error
+        type: string
+    type: object
+  api.ImagePair:
+    properties:
+      createdAt:
+        type: string
+      hash:
+        type: string
+      id:
+        type: string
+      negative:
+        $ref: '#/definitions/api.EncodedImage'
+      original:
+        $ref: '#/definitions/api.EncodedImage'
+    type: object
+  api.ImagePairListDTO:
+    properties:
+      count:
+        type: integer
+      items:
+        items:
+          $ref: '#/definitions/api.ImagePair'
+        type: array
+      status:
+        enum:
+        - ok
+        type: string
+    type: object
+  api.InvertSuccessDTO:
+    properties:
+      pair:
+        $ref: '#/definitions/api.ImagePair'
+      status:
+        enum:
+        - ok
+        type: string
+    type: object
+  api.UploadImageDTO:
+    properties:
+      data:
+        type: string
+    required:
+    - data
+    type: object
+info:
+  contact: {}
+  title: Backend test task
+  version: "1.0"
+paths:
+  /api/get_last_images:
+    get:
+      consumes:
+      - application/json
+      description: Get last images
+      parameters:
+      - description: Number of images to return
+        in: query
+        name: count
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.ImagePairListDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorDTO'
+      summary: returns last images from db
+      tags:
+      - images
+  /api/negative_image:
+    post:
+      consumes:
+      - application/json
+      description: Create negative of image
+      parameters:
+      - description: Base64 encoded image
+        in: body
+        name: image
+        required: true
+        schema:
+          $ref: '#/definitions/api.UploadImageDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.InvertSuccessDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorDTO'
+      summary: creates inversion of image
+      tags:
+      - images
+swagger: "2.0"
