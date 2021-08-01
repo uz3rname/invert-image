@@ -1,39 +1,34 @@
 package main
 
 import (
-  "log"
-  "os"
+	"fmt"
+	"log"
+	"os"
 
-  swagger "github.com/arsmn/fiber-swagger/v2"
-  "github.com/gofiber/fiber/v2/middleware/logger"
-  "github.com/gofiber/fiber/v2"
-  _ "github.com/joho/godotenv/autoload"
-  apiController "github.com/uz3rname/invert-image/api"
-  _ "github.com/uz3rname/invert-image/docs"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	_ "github.com/joho/godotenv/autoload"
+	"github.com/uz3rname/invert-image/api"
+	"github.com/uz3rname/invert-image/db"
 )
 
-func createApp() *fiber.App {
+func main() {
+  store := db.NewPostgresStore(fmt.Sprintf(
+    "host=%s port=%s dbname=%s user=%s password=%s",
+    os.Getenv("DB_HOST"),
+    os.Getenv("DB_PORT"),
+    os.Getenv("DB_DBNAME"),
+    os.Getenv("DB_USER"),
+    os.Getenv("DB_PASS"),
+  ))
+
   app := fiber.New()
-
   app.Use(logger.New())
-
+  app.Mount("/api", api.CreateApp(&api.Options{
+    Store: store,
+  }))
   app.Static("/", "./public")
 
-  apiRouter := app.Group("/api")
-
-  apiRouter.Post("/negative_image", apiController.NegativeImage)
-  apiRouter.Get("/get_last_images", apiController.GetLastImages)
-
-  apiRouter.Get("/docs/*", swagger.Handler)
-  apiRouter.Get("/docs/*", swagger.New(swagger.Config{}))
-
-  return app
-}
-
-// @title Backend test task
-// @version 1.0
-func main() {
-  app := createApp()
   err := app.Listen(os.Getenv("HOST") + ":" + os.Getenv("PORT"))
   if err != nil {
     log.Fatalf(err.Error())

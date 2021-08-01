@@ -5,8 +5,9 @@
         "contact": {},
         "version": "1.0"
     },
+    "basePath": "/api",
     "paths": {
-        "/api/get_last_images": {
+        "/get_last_images": {
             "get": {
                 "description": "Get last images",
                 "consumes": [
@@ -43,7 +44,7 @@
                 }
             }
         },
-        "/api/negative_image": {
+        "/negative_image": {
             "post": {
                 "description": "Create negative of image",
                 "consumes": [

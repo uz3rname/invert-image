@@ -18,5 +18,5 @@ API and web interface will be available at specified port. Swagger is located at
 To run API e2e tests, execute the following:
 
 ```
-go test -v
+make test
 ```

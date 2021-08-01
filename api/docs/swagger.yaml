@@ -1,3 +1,4 @@
+basePath: /api
 definitions:
   api.EncodedImage:
     properties:
@@ -62,7 +63,7 @@ info:
   title: Backend test task
   version: "1.0"
 paths:
-  /api/get_last_images:
+  /get_last_images:
     get:
       consumes:
       - application/json
@@ -86,7 +87,7 @@ paths:
       summary: returns last images from db
       tags:
       - images
-  /api/negative_image:
+  /negative_image:
     post:
       consumes:
       - application/json

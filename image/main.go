@@ -21,15 +21,15 @@ func decodeImage(data []byte) (*image.Image, ImageCodec, error) {
   return nil, nil, errors.New("Unsupported image format")
 }
 
-func GetInvertedImage(data []byte, encodeWith ImageCodec) ([]byte, error, string) {
+func GetInvertedImage(data []byte) ([]byte, string, error) {
   img, codec, err := decodeImage(data[:])
   if err != nil {
-    return nil, err, ""
+    return nil, "", err
   }
 
   neg := imaging.Invert(*img)
   var buf bytes.Buffer
-  encodeWith.Encode(&buf, neg)
+  codec.Encode(&buf, neg)
 
-  return buf.Bytes(), nil, codec.Mimetype()
+  return buf.Bytes(), codec.Mimetype(), nil
 }

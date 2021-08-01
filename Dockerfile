@@ -1,9 +1,9 @@
 FROM golang:alpine
 
 WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download -x
 COPY . .
+RUN go build -o ./bin/app
 
-RUN go get
-RUN go build
-
-CMD ["./invert-image"]
+CMD ["./bin/app"]

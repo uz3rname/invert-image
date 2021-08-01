@@ -1,9 +1,9 @@
 #!/bin/sh
 
 if test -f .env; then
-  . .env
+  . ./.env
 else
-  . .env.example
+  . ./.env.example
 fi
 
 json() {

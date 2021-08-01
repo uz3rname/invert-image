@@ -1,35 +1,35 @@
-package main
+package api
 
 import (
-  "encoding/json"
-  "io"
-  "io/ioutil"
-  "net/http"
-  "testing"
+	"encoding/json"
+	"io"
+	"io/ioutil"
+	"net/http"
+	"testing"
 
-  "github.com/uz3rname/invert-image/db"
-  "github.com/gofiber/fiber/v2"
-  "github.com/steinfletcher/apitest"
-  jsonpath "github.com/steinfletcher/apitest-jsonpath"
-  "github.com/uz3rname/invert-image/api"
+	"github.com/gofiber/fiber/v2"
+	"github.com/steinfletcher/apitest"
+	jsonpath "github.com/steinfletcher/apitest-jsonpath"
+	"github.com/uz3rname/invert-image/db"
 )
 
 func Test_negativeImage(t *testing.T) {
-  app := createApp()
+  store := db.NewMemoryStore()
+  app := CreateApp(&Options{
+    Store: store,
+  })
 
-  data, err := ioutil.ReadFile("./test/image-pair.json")
+  data, err := ioutil.ReadFile("../test/image-pair.json")
   if err != nil {
     panic("Error reading file")
   }
-  var dto, responseDto api.InvertSuccessDTO
+  var dto, responseDto InvertSuccessDTO
   json.Unmarshal(data, &dto)
-
-  db.DB.Delete(&db.ImagePair{}, "hash = ?", dto.Pair.Hash)
 
   t.Run("Post image", func (t *testing.T) {
     apitest.New().
       HandlerFunc(FiberToHandlerFunc(app)).
-      Post("/api/negative_image").
+      Post("/negative_image").
       JSON(fiber.Map{
         "data": dto.Pair.Original.Base64,
       }).
@@ -49,7 +49,7 @@ func Test_negativeImage(t *testing.T) {
   t.Run("Post same image", func (t *testing.T) {
     apitest.New().
       HandlerFunc(FiberToHandlerFunc(app)).
-      Post("/api/negative_image").
+      Post("/negative_image").
       JSON(fiber.Map{
         "data": dto.Pair.Original.Base64,
       }).
@@ -62,7 +62,7 @@ func Test_negativeImage(t *testing.T) {
   t.Run("Get last images", func (t *testing.T) {
     apitest.New().
       HandlerFunc(FiberToHandlerFunc(app)).
-      Get("/api/get_last_images").
+      Get("/get_last_images").
       Expect(t).
       Status(http.StatusOK).
       Assert(jsonpath.Equal(`$.status`, "ok")).
@@ -78,7 +78,6 @@ func FiberToHandlerFunc(app *fiber.App) http.HandlerFunc {
       panic(err)
     }
 
-    // copy headers
     for k, vv := range resp.Header {
       for _, v := range vv {
         w.Header().Add(k, v)
