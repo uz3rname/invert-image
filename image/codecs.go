@@ -1,11 +1,11 @@
 package image
 
 import (
-	"bytes"
-	"errors"
-	"image"
-	"image/jpeg"
-	"image/png"
+  "bytes"
+  "errors"
+  "image"
+  "image/jpeg"
+  "image/png"
 )
 
 type ImageCodec interface {

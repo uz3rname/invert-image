@@ -1,17 +1,17 @@
 package api
 
 import (
-	"log"
-	"os"
-	"strconv"
+  "log"
+  "os"
+  "strconv"
 
-	swagger "github.com/arsmn/fiber-swagger/v2"
-	"github.com/go-playground/validator/v10"
-	"github.com/gofiber/fiber/v2"
-	_ "github.com/uz3rname/invert-image/api/docs"
-	"github.com/uz3rname/invert-image/db"
-	"github.com/uz3rname/invert-image/image"
-	"github.com/uz3rname/invert-image/task"
+  swagger "github.com/arsmn/fiber-swagger/v2"
+  "github.com/go-playground/validator/v10"
+  "github.com/gofiber/fiber/v2"
+  _ "github.com/uz3rname/invert-image/api/docs"
+  "github.com/uz3rname/invert-image/db"
+  "github.com/uz3rname/invert-image/image"
+  "github.com/uz3rname/invert-image/task"
 )
 
 type appState struct {

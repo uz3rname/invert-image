@@ -1,19 +1,19 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"os"
-	"runtime"
-	"strconv"
+  "fmt"
+  "log"
+  "os"
+  "runtime"
+  "strconv"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
-	_ "github.com/joho/godotenv/autoload"
-	"github.com/uz3rname/invert-image/api"
-	"github.com/uz3rname/invert-image/db"
-	"github.com/uz3rname/invert-image/image"
-	"github.com/uz3rname/invert-image/task"
+  "github.com/gofiber/fiber/v2"
+  "github.com/gofiber/fiber/v2/middleware/logger"
+  _ "github.com/joho/godotenv/autoload"
+  "github.com/uz3rname/invert-image/api"
+  "github.com/uz3rname/invert-image/db"
+  "github.com/uz3rname/invert-image/image"
+  "github.com/uz3rname/invert-image/task"
 )
 
 func main() {

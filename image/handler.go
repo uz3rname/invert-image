@@ -1,12 +1,12 @@
 package image
 
 import (
-	"bytes"
-	"context"
+  "bytes"
+  "context"
 
-	"github.com/disintegration/imaging"
-	"github.com/uz3rname/invert-image/db"
-	"github.com/uz3rname/invert-image/task"
+  "github.com/disintegration/imaging"
+  "github.com/uz3rname/invert-image/db"
+  "github.com/uz3rname/invert-image/task"
 )
 
 type InvertImageTaskHandler struct {

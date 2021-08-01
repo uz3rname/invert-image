@@ -1,10 +1,10 @@
 package db
 
 import (
-	"sync"
-	"time"
+  "sync"
+  "time"
 
-	"github.com/google/uuid"
+  "github.com/google/uuid"
 )
 
 type MemoryStore struct {

@@ -1,9 +1,9 @@
 package image
 
 import (
-	"crypto/md5"
-	"encoding/base64"
-	"encoding/hex"
+  "crypto/md5"
+  "encoding/base64"
+  "encoding/hex"
 )
 
 func Hash(data []byte) string {

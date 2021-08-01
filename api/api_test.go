@@ -1,19 +1,19 @@
 package api
 
 import (
-	"encoding/json"
-	"io"
-	"io/ioutil"
-	"net/http"
-	"testing"
-	"time"
+  "encoding/json"
+  "io"
+  "io/ioutil"
+  "net/http"
+  "testing"
+  "time"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/steinfletcher/apitest"
-	jsonpath "github.com/steinfletcher/apitest-jsonpath"
-	"github.com/uz3rname/invert-image/db"
-	"github.com/uz3rname/invert-image/image"
-	"github.com/uz3rname/invert-image/task"
+  "github.com/gofiber/fiber/v2"
+  "github.com/steinfletcher/apitest"
+  jsonpath "github.com/steinfletcher/apitest-jsonpath"
+  "github.com/uz3rname/invert-image/db"
+  "github.com/uz3rname/invert-image/image"
+  "github.com/uz3rname/invert-image/task"
 )
 
 const (

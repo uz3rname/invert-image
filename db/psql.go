@@ -1,11 +1,11 @@
 package db
 
 import (
-	"log"
+  "log"
 
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
+  "gorm.io/driver/postgres"
+  "gorm.io/gorm"
+  "gorm.io/gorm/logger"
 )
 
 type PostgresStore struct {
