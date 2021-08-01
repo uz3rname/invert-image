@@ -217,3 +217,8 @@ func (m *TaskManager) GetStatus(id string) (TaskStatus, error) {
   }
   return 0, errors.New("Task not found")
 }
+
+func (m *TaskManager) GetTask(id string) (*Task, bool) {
+  task, ok := m.taskStore.Get(id)
+  return task, ok
+}

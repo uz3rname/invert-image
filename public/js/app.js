@@ -1,14 +1,19 @@
 const imageObjects = [];
 
+const sleep = n => new Promise(r => setTimeout(r, n));
+
 const showError = msg => {
-  const elt = document.getElementById('error');
+  const elt = document.getElementById('status');
   elt.innerText = msg;
   elt.hidden = false;
+  elt.style.color = '#a44';
 };
 
-const clearError = () => {
-  const elt = document.getElementById('error');
-  elt.hidden = true;
+const showInfo = msg => {
+  const elt = document.getElementById('status');
+  elt.innerText = msg;
+  elt.hidden = false;
+  elt.style.color = 'gray';
 };
 
 const clearFileList = () => {
@@ -70,12 +75,40 @@ const sendImageData = () => {
       }),
     });
     const json = await resp.json();
-    if (json.status !== 'ok') {
-      showError(json.message);
-      return;
+    switch (json.status) {
+      case 'ok':
+        addFileToList(json.pair, true);
+        showInfo('Success!');
+        return;
+      case 'defered':
+        showInfo(
+          `Image is too large, adding to queue, taskId=${json.taskId}`,
+        );
+        (async (taskId) => {
+          while (true) {
+            const resp = await fetch(`/api/get_task_status?taskId=${taskId}`);
+            const json = await resp.json();
+            if (json.taskStatus !== 'new' && json.taskStatus !== 'running') {
+              if (json.taskStatus === 'done') {
+                showInfo(`Task ${taskId} completed! Reloading`);
+                loadLastImages();
+                return;
+              } else if (json.taskStatus === 'failed') {
+                showError(`Task ${taskId} failed!`);
+                return;
+              } else if (json.taskStatus === 'canceled') {
+                showInfo(`Task ${taskId} was cancelled`);
+                return;
+              }
+            }
+            await sleep(1000);
+          }
+        })(json.taskId);
+        return;
+      default:
+        showError(json.message);
+        return;
     }
-    addFileToList(json.pair, true);
-    clearError();
   }
   reader.readAsArrayBuffer(elt.files[0]);
 };
@@ -91,6 +124,7 @@ const loadLastImages = async () => {
   for (const item of json.items) {
     addFileToList(item);
   }
+  showInfo('Updated!')
 };
 
 window.onload = () => {

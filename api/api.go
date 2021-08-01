@@ -123,7 +123,7 @@ func getLastImages(state *appState) fiber.Handler {
     }
 
     dbPairs := state.store.GetLastImages(count)
-    var pairs []*ImagePair
+    pairs := make([]*ImagePair, 0)
 
     for _, pair := range dbPairs {
       pairs = append(pairs, serializeImagePair(pair))
@@ -134,6 +134,41 @@ func getLastImages(state *appState) fiber.Handler {
       Items: pairs,
       Count: len(dbPairs),
     })
+  }
+}
+
+// GetTaskStatus
+// @Description Get task status
+// @Summary returns status of background task
+// @Tags images
+// @Accept json
+// @Produce json
+// @Param taskId query string false "Task ID"
+// @Success 200 {object} TaskStatusDTO
+// @Success 400 {object} ErrorDTO
+// @Router /get_task_status [get]
+func getTaskStatus(state *appState) fiber.Handler {
+  return func(ctx *fiber.Ctx) error {
+    taskId := ctx.Query("taskId", "")
+    if taskId == "" {
+      return ctx.JSON(makeError("\"taskId\" is required!"))
+    }
+
+    t, ok := state.manager.GetTask(taskId)
+    if !ok {
+      return ctx.JSON(makeError("Task not found"))
+    }
+
+    dto := &TaskStatusDTO{
+      Status: "ok",
+      TaskStatus: t.Status.String(),
+    }
+
+    if t.Err != nil {
+      dto.Error = t.Err.Error()
+    }
+
+    return ctx.JSON(dto)
   }
 }
 
@@ -162,6 +197,7 @@ func CreateApp(options *Options) *fiber.App {
 
   app.Post("/negative_image", negativeImage(state))
   app.Get("/get_last_images", getLastImages(state))
+  app.Get("/get_task_status", getTaskStatus(state))
 
   return app
 }

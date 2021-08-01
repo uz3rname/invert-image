@@ -54,6 +54,23 @@ definitions:
       taskId:
         type: string
     type: object
+  api.TaskStatusDTO:
+    properties:
+      error:
+        type: string
+      status:
+        enum:
+        - ok
+        type: string
+      taskStatus:
+        enum:
+        - new
+        - running
+        - failed
+        - done
+        - canceled
+        type: string
+    type: object
   api.UploadImageDTO:
     properties:
       data:
@@ -88,6 +105,30 @@ paths:
           schema:
             $ref: '#/definitions/api.ErrorDTO'
       summary: returns last images from db
+      tags:
+      - images
+  /get_task_status:
+    get:
+      consumes:
+      - application/json
+      description: Get task status
+      parameters:
+      - description: Task ID
+        in: query
+        name: taskId
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.TaskStatusDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.ErrorDTO'
+      summary: returns status of background task
       tags:
       - images
   /negative_image:

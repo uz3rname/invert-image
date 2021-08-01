@@ -61,6 +61,43 @@ var doc = `{
                 }
             }
         },
+        "/get_task_status": {
+            "get": {
+                "description": "Get task status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "images"
+                ],
+                "summary": "returns status of background task",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Task ID",
+                        "name": "taskId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.TaskStatusDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/negative_image": {
             "post": {
                 "description": "Create negative of image",
@@ -183,6 +220,30 @@ var doc = `{
                 },
                 "taskId": {
                     "type": "string"
+                }
+            }
+        },
+        "api.TaskStatusDTO": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "ok"
+                    ]
+                },
+                "taskStatus": {
+                    "type": "string",
+                    "enum": [
+                        "new",
+                        "running",
+                        "failed",
+                        "done",
+                        "canceled"
+                    ]
                 }
             }
         },

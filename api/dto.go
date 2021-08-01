@@ -41,6 +41,12 @@ type InvertImageResponse struct {
   TaskID      string          `json:"taskId,omitempty"`
 }
 
+type TaskStatusDTO struct {
+  Status      string          `json:"status" enums:"ok"`
+  TaskStatus  string          `json:"taskStatus" enums:"new,running,failed,done,canceled"`
+  Error       string          `json:"error,omitempty"`
+}
+
 func makeError(msg string, err ...error) ErrorDTO {
   var strings []interface{}
 
