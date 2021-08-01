@@ -1,23 +1,29 @@
 package api
 
 import (
-  "log"
-  "os"
-  "strconv"
+	"log"
+	"os"
+	"strconv"
 
 	swagger "github.com/arsmn/fiber-swagger/v2"
+	"github.com/go-playground/validator/v10"
+	"github.com/gofiber/fiber/v2"
 	_ "github.com/uz3rname/invert-image/api/docs"
-  "github.com/go-playground/validator/v10"
-  "github.com/gofiber/fiber/v2"
-  "github.com/uz3rname/invert-image/db"
-  "github.com/uz3rname/invert-image/image"
+	"github.com/uz3rname/invert-image/db"
+	"github.com/uz3rname/invert-image/image"
+	"github.com/uz3rname/invert-image/task"
 )
 
 type appState struct {
   validator *validator.Validate
   logger *log.Logger
   store db.Store
+  manager *task.TaskManager
 }
+
+const (
+  MaxFileSize = 1024 * 1024
+)
 
 // NegativeImage
 // @Description Create negative of image
@@ -26,7 +32,7 @@ type appState struct {
 // @Accept json
 // @Produce json
 // @Param image body UploadImageDTO true "Base64 encoded image"
-// @Success 200 {object} InvertSuccessDTO
+// @Success 200 {object} InvertImageResponse
 // @Success 400 {object} ErrorDTO
 // @Router /negative_image [post]
 func negativeImage(state *appState) fiber.Handler {
@@ -57,34 +63,45 @@ func negativeImage(state *appState) fiber.Handler {
         "Found already processed image (MD5 sum: \"%s\"), skipping",
         pair.Hash,
       )
-      return ctx.JSON(&InvertSuccessDTO{
+      return ctx.JSON(&InvertImageResponse{
         Status: "ok",
         Pair: serializeImagePair(pair),
       })
     }
 
-    neg, mimetype, err := image.GetInvertedImage(data[:])
-    if err != nil {
-      return ctx.Status(400).JSON(makeError("Unsupported image format"))
+    taskInput := &image.InvertImageTaskInput{
+      Data: data[:],
     }
 
-    pair := state.store.AddImage(
-      image.Serialize(data[:]),
-      image.Serialize(neg[:]),
-      mimetype,
-      mimetype,
-      hash,
-    )
-    state.logger.Printf(
-      "Added image \"%s\", MD5 sum: \"%s\"",
-      pair.ID,
-      pair.Hash,
-    )
+    if len(data) > MaxFileSize {
+      taskId, err := state.manager.PushTask("invert-image", taskInput)
+      if err != nil {
+        return ctx.Status(400).JSON(makeError("Couldn't start task"))
+      }
 
-    return ctx.JSON(&InvertSuccessDTO{
-      Status: "ok",
-      Pair: serializeImagePair(pair),
-    })
+      return ctx.JSON(&InvertImageResponse{
+        Status: "defered",
+        TaskID: taskId,
+      })
+    } else {
+      result, err := state.manager.RunTask("invert-image", taskInput)
+      if err != nil {
+        return ctx.Status(400).JSON(makeError("Image inversion error: %s", err))
+      }
+
+      pair := result.(*image.InvertImageTaskResult).Pair
+
+      state.logger.Printf(
+        "Added image \"%s\", MD5 sum: \"%s\"",
+        pair.ID,
+        pair.Hash,
+      )
+
+      return ctx.JSON(&InvertImageResponse{
+        Status: "ok",
+        Pair: serializeImagePair(pair),
+      })
+    }
   }
 }
 
@@ -109,7 +126,7 @@ func getLastImages(state *appState) fiber.Handler {
     var pairs []*ImagePair
 
     for _, pair := range dbPairs {
-      pairs = append(pairs, serializeImagePair(&pair))
+      pairs = append(pairs, serializeImagePair(pair))
     }
 
     return ctx.JSON(ImagePairListDTO{
@@ -122,17 +139,21 @@ func getLastImages(state *appState) fiber.Handler {
 
 type Options struct {
   Store db.Store
+  TaskManager *task.TaskManager
 }
 
 // @title Backend test task
 // @version 1.0
 // @BasePath /api
 func CreateApp(options *Options) *fiber.App {
-  app := fiber.New()
+  app := fiber.New(fiber.Config{
+    BodyLimit: 1024 * 1024 * 1024,
+  })
   state := &appState{
     validator: validator.New(),
     logger: log.New(os.Stdout, "| ", log.Ltime | log.Lmsgprefix),
     store: options.Store,
+    manager: options.TaskManager,
   }
 
   app.Get("/docs", swagger.Handler)

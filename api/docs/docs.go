@@ -89,7 +89,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api.InvertSuccessDTO"
+                            "$ref": "#/definitions/api.InvertImageResponse"
                         }
                     },
                     "400": {
@@ -168,7 +168,7 @@ var doc = `{
                 }
             }
         },
-        "api.InvertSuccessDTO": {
+        "api.InvertImageResponse": {
             "type": "object",
             "properties": {
                 "pair": {
@@ -177,8 +177,12 @@ var doc = `{
                 "status": {
                     "type": "string",
                     "enum": [
-                        "ok"
+                        "ok",
+                        "defered"
                     ]
+                },
+                "taskId": {
+                    "type": "string"
                 }
             }
         },

@@ -1,10 +1,11 @@
 package image
 
 import (
-  "bytes"
-  "image"
-  "image/jpeg"
-  "image/png"
+	"bytes"
+	"errors"
+	"image"
+	"image/jpeg"
+	"image/png"
 )
 
 type ImageCodec interface {
@@ -49,4 +50,17 @@ func (d *JPEGImageCodec) Mimetype() string {
 var imageCodecs = []ImageCodec{
   &PNGImageCodec{},
   &JPEGImageCodec{},
+}
+
+func decodeImage(data []byte) (*image.Image, ImageCodec, error) {
+  var img image.Image
+
+  for _, codec := range imageCodecs {
+    reader := bytes.NewReader(data)
+    if codec.Decode(reader, &img) {
+      return &img, codec, nil
+    }
+  }
+
+  return nil, nil, errors.New("Unsupported image format")
 }

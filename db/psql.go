@@ -28,8 +28,8 @@ func NewPostgresStore(dsn string) Store {
   return &PostgresStore{db}
 }
 
-func (s *PostgresStore) GetLastImages(n int) []ImagePair {
-  pairs := make([]ImagePair, n)
+func (s *PostgresStore) GetLastImages(n int) []*ImagePair {
+  pairs := make([]*ImagePair, n)
   s.db.Order("created_at desc").Limit(n).Find(&pairs)
 
   return pairs

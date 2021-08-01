@@ -3,15 +3,15 @@ package task
 import "sync"
 
 type MemoryTaskStore struct {
-  tasks map[string]task
+  tasks map[string]Task
   lock sync.RWMutex
 }
 
 func NewMemoryTaskStore() TaskStore {
-  return &MemoryTaskStore{make(map[string]task), sync.RWMutex{}}
+  return &MemoryTaskStore{make(map[string]Task), sync.RWMutex{}}
 }
 
-func (s *MemoryTaskStore) Save(task *task) error {
+func (s *MemoryTaskStore) Save(task *Task) error {
   s.lock.Lock()
   defer s.lock.Unlock()
 
@@ -19,7 +19,7 @@ func (s *MemoryTaskStore) Save(task *task) error {
   return nil
 }
 
-func (s *MemoryTaskStore) Get(id string) (*task, bool) {
+func (s *MemoryTaskStore) Get(id string) (*Task, bool) {
   s.lock.RLock()
   defer s.lock.RUnlock()
 

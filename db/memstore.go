@@ -10,7 +10,7 @@ import (
 type MemoryStore struct {
   byHash map[string]*ImagePair
   pairs []*ImagePair
-  lock *sync.RWMutex
+  lock sync.RWMutex
 }
 
 func NewMemoryStore() Store {
@@ -19,25 +19,18 @@ func NewMemoryStore() Store {
   }
 }
 
-func (s *MemoryStore) GetLastImages(n int) []ImagePair {
-  result := []ImagePair(nil)
-  var start int
-
+func (s *MemoryStore) GetLastImages(n int) []*ImagePair {
   s.lock.RLock()
   defer s.lock.RUnlock()
 
-  if len(s.pairs) < n {
-    start = 0
+  var l int
+  if len(s.pairs) >= n {
+    l = n
   } else {
-    start = len(s.pairs) - n
-  }
-  end := len(s.pairs)
-
-  for i := start; i < end; i++ {
-    result = append(result, *s.pairs[i])
+    l = len(s.pairs)
   }
 
-  return result
+  return s.pairs[:l]
 }
 
 func (s *MemoryStore) AddImage(
@@ -56,7 +49,7 @@ func (s *MemoryStore) AddImage(
   s.lock.Lock()
   defer s.lock.Unlock()
 
-  s.pairs = append(s.pairs, pair)
+  s.pairs = append([]*ImagePair{pair}, s.pairs...)
   s.byHash[pair.Hash] = pair
 
   return pair

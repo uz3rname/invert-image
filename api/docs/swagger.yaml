@@ -42,13 +42,16 @@ definitions:
         - ok
         type: string
     type: object
-  api.InvertSuccessDTO:
+  api.InvertImageResponse:
     properties:
       pair:
         $ref: '#/definitions/api.ImagePair'
       status:
         enum:
         - ok
+        - defered
+        type: string
+      taskId:
         type: string
     type: object
   api.UploadImageDTO:
@@ -105,7 +108,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api.InvertSuccessDTO'
+            $ref: '#/definitions/api.InvertImageResponse'
         "400":
           description: Bad Request
           schema:

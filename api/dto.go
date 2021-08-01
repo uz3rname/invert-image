@@ -35,9 +35,10 @@ type UploadImageDTO struct {
   Data        string          `json:"data" validate:"required"`
 }
 
-type InvertSuccessDTO struct {
-  Status      string          `json:"status" enums:"ok"`
-  Pair        *ImagePair      `json:"pair"`
+type InvertImageResponse struct {
+  Status      string          `json:"status" enums:"ok,defered"`
+  Pair        *ImagePair      `json:"pair,omitempty"`
+  TaskID      string          `json:"taskId,omitempty"`
 }
 
 func makeError(msg string, err ...error) ErrorDTO {
